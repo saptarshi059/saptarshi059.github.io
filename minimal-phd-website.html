@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Applied LLM Scientist</title>
+    <title>Saptarshi Sengupta</title>
     <style>
         * {
             margin: 0;
@@ -28,6 +28,21 @@
             margin-bottom: 60px;
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 40px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        
+        .header-content {
+            flex: 1;
+        }
+        
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
         }
         
         h1 {
@@ -135,8 +150,20 @@
                 font-size: 2em;
             }
             
+            header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .profile-photo {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 20px;
+            }
+            
             .links a {
-                display: block;
+                display: inline-block;
                 margin-bottom: 10px;
             }
         }
@@ -145,78 +172,29 @@
 <body>
     <div class="container">
         <header>
-            <h1>Your Name</h1>
-            <p class="subtitle">PhD Student in Computer Science</p>
-            <p class="about">
-                I'm a PhD student at [University Name] working on [brief research focus]. 
-                My research focuses on large language models, particularly [specific area like reasoning, alignment, efficiency, etc.]. 
-                I'm passionate about bridging the gap between research and real-world applications.
-            </p>
-            <div class="links">
-                <a href="mailto:your.email@university.edu">Email</a>
-                <a href="https://github.com/yourusername" target="_blank">GitHub</a>
-                <a href="https://scholar.google.com/citations?user=YOUR_ID" target="_blank">Google Scholar</a>
-                <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
-                <a href="https://twitter.com/yourhandle" target="_blank">Twitter</a>
+            <img src="profile-photo.jpg" alt="Saptarshi Sengupta - profile photo" class="profile-photo">
+            <div class="header-content">
+                <h1>Saptarshi Sengupta</h1>
+                <p class="subtitle">PhD Student in Informatics</p>
+                <p class="about">
+                    I'm a PhD student at The Pennsylvania State University working on domain-specific applications of LLMs, under the guidance of my advisor, <a href="https://suhangwang.ist.psu.edu/">Dr. Suhang Wang</a>. My research interests span various aspects of NLP such as QA, RAG, IR/Search, LLM-agents, model interpretability and low-resource languages. Overall, I'm interested in applying language technologies to challenging edge-cases which have either too much/little data. Outside of work, I am an advocate for animal rights 🦙, enjoy reading 📖 (currently on an Alan Turing biography), cooking 🍲 and playing the guitar 🎸
+                </p>
+                <div class="links">
+                    <a href="mailto:sks6765@psu.edu">Email</a>
+                    <a href="https://github.com/saptarshi059" target="_blank">GitHub</a>
+                    <a href="https://scholar.google.com/citations?user=L-fgN8MAAAAJ&hl=en" target="_blank">Google Scholar</a>
+                    <a href="https://www.linkedin.com/in/saptarshisenguptapsu/" target="_blank">LinkedIn</a>
+                    <a href="https://x.com/saptarshisays" target="_blank">X (Twitter)</a>
+                </div>
             </div>
         </header>
 
         <section id="research">
             <h2>Research Interests</h2>
             <p class="about">
-                My work focuses on [main research area]. I'm particularly interested in [specific topics], 
-                with applications in [application areas]. I approach problems from both theoretical and 
-                applied perspectives, aiming to develop methods that are both scientifically rigorous and 
+                My work focuses on [main research area]. I'm particularly interested in [specific topics], with applications in [application areas]. I approach problems from both theoretical and applied perspectives, aiming to develop methods that are both scientifically rigorous and 
                 practically useful.
             </p>
-        </section>
-
-        <section id="projects">
-            <h2>Selected Projects</h2>
-            
-            <div class="project">
-                <h3>Project Title One</h3>
-                <p>Brief description of the project, its goals, and what you built or discovered. 
-                   Highlight the technical approach and impact.</p>
-                <div class="project-links">
-                    <a href="#" target="_blank">Paper</a>
-                    <a href="#" target="_blank">Code</a>
-                    <a href="#" target="_blank">Demo</a>
-                </div>
-                <div class="tags">
-                    <span class="tag">LLMs</span>
-                    <span class="tag">PyTorch</span>
-                    <span class="tag">Transformers</span>
-                </div>
-            </div>
-
-            <div class="project">
-                <h3>Project Title Two</h3>
-                <p>Brief description of another project. Focus on what makes it interesting and relevant 
-                   for applied LLM roles.</p>
-                <div class="project-links">
-                    <a href="#" target="_blank">Code</a>
-                    <a href="#" target="_blank">Blog Post</a>
-                </div>
-                <div class="tags">
-                    <span class="tag">Fine-tuning</span>
-                    <span class="tag">RLHF</span>
-                    <span class="tag">Evaluation</span>
-                </div>
-            </div>
-
-            <div class="project">
-                <h3>Project Title Three</h3>
-                <p>Another project description. Could be a side project, hackathon, or course project 
-                   that demonstrates your skills.</p>
-                <div class="project-links">
-                    <a href="#" target="_blank">GitHub</a>
-                </div>
-                <div class="tags">
-                    <span class="tag">NLP</span>
-                    <span class="tag">API Development</span>
-                </div>
-            </div>
         </section>
 
         <section id="publications">
