@@ -399,42 +399,61 @@
     widgetInput.disabled = true;
     widgetSendBtn.disabled = true;
 
-    const typingId = appendWidgetMessage('Thinking...', 'assistant-msg');
+    // Create the message element blank so we can stream text directly into it
+    const typingId = appendWidgetMessage('', 'assistant-msg');
+    const assistantMessageBox = document.getElementById(typingId);
 
     try {
-        // We use a structured text payload to skip the complex CORS preflight check
-        const rawBody = JSON.stringify({
-            model: WIDGET_MODEL_NAME,
-            messages: [
-                { role: 'system', content: 'You are a professional, friendly personal portfolio assistant.' },
-                { role: 'user', content: text }
-            ],
-            stream: true
+        const response = await fetch(`${WIDGET_TUNNEL_URL}/api/chat`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Custom Portfolio Assistant Hook)'
+            },
+            body: JSON.stringify({
+                model: WIDGET_MODEL_NAME,
+                messages: [
+                    { role: 'system', content: 'You are a professional, friendly personal portfolio assistant.' },
+                    { role: 'user', content: text }
+                ],
+                stream: true // <-- Streaming is active!
+            })
         });
 
-        const response = await fetch(`${WIDGET_TUNNEL_URL}/api/chat`, {
-    method: 'POST',
-    headers: { 
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Custom Portfolio Assistant Hook)'
-    },
-    body: JSON.stringify({
-        model: WIDGET_MODEL_NAME,
-        messages: [
-            { role: 'system', content: 'You are a professional, friendly personal portfolio assistant.' },
-            { role: 'user', content: text }
-        ],
-        stream: true
-    })
-});
-
         if (!response.ok) throw new Error();
-        
-        const data = await response.json();
-        document.getElementById(typingId).innerText = data.message.content;
+
+        // Set up the stream reader and text decoder
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let done = false;
+
+        while (!done) {
+            const { value, done: readerDone } = await reader.read();
+            done = readerDone;
+            if (value) {
+                const chunk = decoder.decode(value, { stream: !done });
+                
+                // Ollama streams data as a series of separate JSON objects split by newlines
+                const lines = chunk.split('\n');
+                for (const line of lines) {
+                    if (line.trim() === '') continue;
+                    try {
+                        const parsedLine = JSON.parse(line);
+                        if (parsedLine.message && parsedLine.message.content) {
+                            // Append each word/character token immediately to the text box
+                            assistantMessageBox.innerText += parsedLine.message.content;
+                            widgetMessages.scrollTop = widgetMessages.scrollHeight;
+                        }
+                    } catch (e) {
+                        // Ignore minor parsing fragments at the edge of stream packets
+                    }
+                }
+            }
+        }
+
     } catch (err) {
-        document.getElementById(typingId).innerText = 'Unable to connect to assistant right now.';
-        document.getElementById(typingId).style.color = '#ef4444';
+        assistantMessageBox.innerText = 'Unable to connect to assistant right now.';
+        assistantMessageBox.style.color = '#ef4444';
     } finally {
         widgetInput.disabled = false;
         widgetSendBtn.disabled = false;
