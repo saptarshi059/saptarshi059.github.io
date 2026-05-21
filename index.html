@@ -404,7 +404,7 @@
         try {
             const response = await fetch(`${WIDGET_TUNNEL_URL}/api/chat`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (Custom Portfolio Assistant Hook)' },
                 body: JSON.stringify({
                     model: WIDGET_MODEL_NAME,
                     messages: [
