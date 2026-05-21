@@ -413,16 +413,20 @@
         });
 
         const response = await fetch(`${WIDGET_TUNNEL_URL}/api/chat`, {
-            method: 'POST',
-            mode: 'cors',
-            headers: { 
-                // 1. Crucial: 'text/plain' classifies this as a "Simple Request", avoiding the browser OPTIONS block
-                'Content-Type': 'text/plain',
-                // 2. Crucial: This explicitly tells ngrok to instantly drop the intercept warning landing page
-                'ngrok-skip-browser-warning': 'true'
-            },
-            body: rawBody
-        });
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+    },
+    body: JSON.stringify({
+        model: WIDGET_MODEL_NAME,
+        messages: [
+            { role: 'system', content: 'You are a professional, friendly personal portfolio assistant.' },
+            { role: 'user', content: text }
+        ],
+        stream: false
+    })
+});
 
         if (!response.ok) throw new Error();
         
