@@ -315,5 +315,136 @@
             <p>Last updated: October 2025</p>
         </footer>
     </div>
+
+                    <!-- ========================================== -->
+<!-- START OF OLLAMA FLOATING CHATBOX WIDGET -->
+<!-- ========================================== -->
+<div id="portfolio-chat-widget">
+    <!-- The Floating Toggle Button -->
+    <button id="chat-widget-toggle" onclick="toggleChatWindow()">💬</button>
+
+    <!-- The Hidden Chat Window -->
+    <div id="chat-widget-window" style="display: none;">
+        <div id="chat-widget-header">
+            <span>Portfolio Assistant</span>
+            <button id="chat-widget-close" onclick="toggleChatWindow()">✕</button>
+        </div>
+        <div id="chat-widget-messages">
+            <div class="chat-widget-msg assistant-msg">Hello! Ask me anything about my work or background.</div>
+        </div>
+        <div id="chat-widget-input-area">
+            <input type="text" id="chat-widget-input" placeholder="Type a message..." autocomplete="off">
+            <button id="chat-widget-send" onclick="sendWidgetMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Widget container pinned to bottom right */
+    #portfolio-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    
+    /* Floating circular button */
+    #chat-widget-toggle { width: 56px; height: 56px; border-radius: 50%; background: #2563eb; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
+    #chat-widget-toggle:hover { transform: scale(1.05); }
+    
+    /* Main Chat Window Box */
+    #chat-widget-window { width: 340px; height: 450px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; position: absolute; bottom: 70px; right: 0; animation: widgetFadeIn 0.2s ease; }
+    @keyframes widgetFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Internal structural styles */
+    #chat-widget-header { background: #2563eb; color: white; padding: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+    #chat-widget-close { background: none; border: none; color: white; font-size: 16px; cursor: pointer; opacity: 0.8; }
+    #chat-widget-close:hover { opacity: 1; }
+    #chat-widget-messages { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .chat-widget-msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; word-wrap: break-word; }
+    .user-msg { background: #2563eb; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .assistant-msg { background: #f1f5f9; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 2px; }
+    #chat-widget-input-area { display: flex; padding: 10px; border-top: 1px solid #e2e8f0; background: #f8fafc; }
+    #chat-widget-input { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.9rem; }
+    #chat-widget-input:focus { border-color: #2563eb; }
+    #chat-widget-send { background: #2563eb; color: white; border: none; padding: 0 12px; margin-left: 6px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+    #chat-widget-send:disabled { background: #93c5fd; cursor: not-allowed; }
+</style>
+
+<script>
+    // ------------------------------------------------------------
+    // CONFIGURATION: Replace with your actual live ngrok link & model name
+    // ------------------------------------------------------------
+    const WIDGET_TUNNEL_URL = 'https://speckled-fasting-wannabe.ngrok-free.dev'; 
+    const WIDGET_MODEL_NAME = 'phi3:mini'; 
+    // ------------------------------------------------------------
+
+    const widgetWindow = document.getElementById('chat-widget-window');
+    const widgetMessages = document.getElementById('chat-widget-messages');
+    const widgetInput = document.getElementById('chat-widget-input');
+    const widgetSendBtn = document.getElementById('chat-widget-send');
+
+    widgetInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendWidgetMessage(); });
+
+    function toggleChatWindow() {
+        if (widgetWindow.style.display === 'none') {
+            widgetWindow.style.display = 'flex';
+            widgetInput.focus();
+        } else {
+            widgetWindow.style.display = 'none';
+        }
+    }
+
+    async function sendWidgetMessage() {
+        const text = widgetInput.value.trim();
+        if (!text) return;
+
+        appendWidgetMessage(text, 'user-msg');
+        widgetInput.value = '';
+        widgetInput.disabled = true;
+        widgetSendBtn.disabled = true;
+
+        const typingId = appendWidgetMessage('Thinking...', 'assistant-msg');
+
+        try {
+            const response = await fetch(`${WIDGET_TUNNEL_URL}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: WIDGET_MODEL_NAME,
+                    messages: [
+                        { role: 'system', content: 'You are a professional, friendly personal portfolio assistant.' },
+                        { role: 'user', content: text }
+                    ],
+                    stream: false
+                })
+            });
+
+            if (!response.ok) throw new Error();
+            const data = await response.json();
+            document.getElementById(typingId).innerText = data.message.content;
+        } catch (err) {
+            document.getElementById(typingId).innerText = 'Unable to connect to assistant right now.';
+            document.getElementById(typingId).style.color = '#ef4444';
+        } finally {
+            widgetInput.disabled = false;
+            widgetSendBtn.disabled = false;
+            widgetInput.focus();
+            widgetMessages.scrollTop = widgetMessages.scrollHeight;
+        }
+    }
+
+    function appendWidgetMessage(text, className) {
+        const msgDiv = document.createElement('div');
+        const id = 'wmsg-' + Date.now();
+        msgDiv.id = id;
+        msgDiv.className = `chat-widget-msg ${className}`;
+        msgDiv.innerText = text;
+        widgetMessages.appendChild(msgDiv);
+        widgetMessages.scrollTop = widgetMessages.scrollHeight;
+        return id;
+    }
+</script>
+<!-- ========================================== -->
+<!-- END OF OLLAMA FLOATING CHATBOX WIDGET -->
+<!-- ========================================== -->
+
+
+                    
 </body>
 </html>
